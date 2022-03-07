@@ -21,6 +21,7 @@ void get_one_binary_code(const char symb){
        if(global::alphabet[i]!=symb) number++;
        else break;
    }
+   number++; //костыль, не работает с 00000
    while(number!=0)
    {
        res += (number%2)+'0';

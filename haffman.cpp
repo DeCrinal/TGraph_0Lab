@@ -20,7 +20,8 @@ void getEncription(Node*node,std::string val){
         if(val==""&&node->left == nullptr)
             val="0";
         std::string temporal = node->val;
-        global::encryption[temporal[0]]=val;
+        //global::encryption[temporal[0]]=val;
+        global::encryption[temporal]=val;
         return;
     }
     getEncription(node->left,val+"0");
@@ -40,8 +41,15 @@ void printValues(Node*node,std::string val){
 int to_encrypt_by_haffman(std::string input)
 {
     std::string output="";
-    for(unsigned int i = 0; i+1<input.size();i++){
-      global::arch[input[i]]++;
+    for(uint i = 0; i+1<input.size();i+=5){
+
+      std::string next_5_bits="";
+      for(uint cur=i;cur<i+5&&cur+1<input.size();cur++){
+          next_5_bits+=input[cur];
+      }
+      while(next_5_bits.size()!=5)
+          next_5_bits="0"+next_5_bits;
+      global::arch[next_5_bits]++;
     }
     std::vector<Node*>tree;
     for(auto it = global::arch.begin();it!=global::arch.end();it++){
@@ -69,10 +77,15 @@ int to_encrypt_by_haffman(std::string input)
         sort(tree.begin(),tree.end(),cmpNodes);
     }
     getEncription(tree[0],"");
-    for(unsigned int i = 0; i<input.size();i++){
-        char key = input[i];
+    for(unsigned int i = 0; i<input.size();i+=5){
+        std::string key = "";
+        for(uint cur = i; cur<i+5&&cur+1<input.size();cur++)
+            key+=input[cur];
+        while(key.size()!=5)
+            key="0"+key;
         global::encrypt_data_haf+=global::encryption[key];
     }
+    global::encrypt_data_haf+="\0";
     std::cout<<"Generated prefix codes:"<<std::endl;
     printValues(tree[0],"");
     std::cout<<global::encrypt_data_haf<<std::endl;
@@ -82,10 +95,8 @@ int to_encrypt_by_haffman(std::string input)
 double get_cost_coding(){
     double res=0;
     for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
-        it++; //encryption.begin() = ""
-        //std::cout<<it->second.size()<<std::endl;
-        //std::cout<<global::arch[it->first]<<std::endl;
-        //std::cout<<(global::arch[it->first]/static_cast<double>(global::k_10k));
+        if(it==global::encryption.begin())
+            it++; //encryption.begin() = ""
         res += (it->second.size())*(global::arch[it->first]/static_cast<double>(global::k_10k));
     }
     return res;
@@ -94,7 +105,7 @@ double get_cost_coding(){
 int to_decode_haffman()
 {
     std::string cur_value="";
-    std::map<std::string,char>reversed_encryption;
+    std::map<std::string,std::string>reversed_encryption;
     for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
         reversed_encryption[it->second]=it->first;
     }
@@ -105,17 +116,17 @@ int to_decode_haffman()
            cur_value="";
        }
     }
+    std::cout<<std::endl<<"Decode data:"<<std::endl;
+    std::cout<<global::decode_data_haf<<std::endl;
     return 0;
 }
 
-bool is_correct_decode()
+bool is_correct_decode(const std::string str1, const std::string str2)
 {
-    for(uint i = 0; i<global::input_data_string.size()&&
-        i<global::decode_data_haf.size();i++)
+    for(uint i = 0; i<str1.size()&& i<str2.size();i++)
     {
-        if(global::decode_data_haf[i]!=global::input_data_string[i]){
+        if(str1[i]!=str2[i])
            return false;
-        }
     }
     return true;
 }

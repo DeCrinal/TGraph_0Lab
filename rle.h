@@ -2,4 +2,6 @@
 #define RLE_H
 #include"headers.h"
 int get_maximum_same_symb_in_order(std::string);
+int to_encrypt_by_rle(const uint, const std::string);
+std::string to_binary(uint);
 #endif // RLE_H

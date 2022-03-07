@@ -9,5 +9,5 @@ int to_encrypt_by_haffman(std::string input);
 int to_unencrypt_haffman();
 int to_decode_haffman();
 double get_cost_coding();
-bool is_correct_decode();
+bool is_correct_decode(const std::string, const std::string);
 #endif // HAFFMAN_H
