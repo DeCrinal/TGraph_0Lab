@@ -21,6 +21,12 @@ namespace global {
     extern std::string decode_data_haf;//декодированный хaффманом символьная строка
 
     extern std::string encrypt_data_rle;
+    extern std::string decode_data_rle;
+
+    //0 бит - длина слова
+    //1 бит - кол-во бит под число слов
+    //2 бит - кол-во добавленных в конец 0
+    extern std::vector<uint>rle_cnf;
 
 #ifndef BINARY
     extern std::map<char,std::string>encryption; //представление символа в кодировке

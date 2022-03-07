@@ -3,6 +3,7 @@
 #include "headers.h"
 #include "globals.h"
 void generate_10k_symbs();
+void generate_same_10k_symbs();//deb. func. delete
 void print_10k_symbs();
 void get_one_binary_code(const char symb);
 void print_non_encrypt();

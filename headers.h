@@ -12,4 +12,5 @@
 #include "haffman.h"
 #include "algs.h"
 #include"rle.h"
+#include<cmath>
 #endif // HEADERS_H

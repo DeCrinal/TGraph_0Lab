@@ -7,7 +7,7 @@ void getEncription(Node*node,std::string val);
 void printValues(Node*node,std::string val);
 int to_encrypt_by_haffman(std::string input);
 int to_unencrypt_haffman();
-int to_decode_haffman();
+int to_decode_haffman(std::string&);
 double get_cost_coding();
 bool is_correct_decode(const std::string, const std::string);
 #endif // HAFFMAN_H

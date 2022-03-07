@@ -1,6 +1,6 @@
 #include"headers.h"
 namespace global {
-    const int k_10k = 500;
+    const int k_10k = 5;
     const int k_dif_symbs_number=25;
     std::string input_data_string;
     std::string decode_data_haf;
@@ -14,7 +14,8 @@ namespace global {
     std::string non_encrypt_data;
     std::string encrypt_data_haf;
     std::string encrypt_data_rle;
-
+    std::string decode_data_rle;
+    std::vector<uint>rle_cnf;
 #ifndef BINARY
     std::map<char,std::string>encryption;
     std::map<char, int> arch; //количество каждого символа

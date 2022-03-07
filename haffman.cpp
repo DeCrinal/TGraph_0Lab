@@ -102,15 +102,16 @@ double get_cost_coding(){
     return res;
 }
 
-int to_decode_haffman()
+int to_decode_haffman(std::string &input)
 {
+    global::decode_data_haf="";
     std::string cur_value="";
     std::map<std::string,std::string>reversed_encryption;
     for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
         reversed_encryption[it->second]=it->first;
     }
-    for(uint cur = 0; cur<global::encrypt_data_haf.size();cur++){
-       cur_value += global::encrypt_data_haf[cur];
+    for(uint cur = 0; cur<input.size();cur++){
+       cur_value += input[cur];
        if(reversed_encryption.find(cur_value)!=reversed_encryption.end()){
            global::decode_data_haf+=reversed_encryption[cur_value];
            cur_value="";

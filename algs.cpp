@@ -60,3 +60,13 @@ void set_binary_codes_for_alph()
         get_one_binary_code(global::alphabet[i]);
     }
 }
+
+void generate_same_10k_symbs()
+{
+   srand(time(NULL));
+   for(int i = 0; i<global::k_10k;i++){
+       global::input_data_string+=global::alphabet[rand()%1];
+   }
+   global::input_data_string+='\0';
+   set_binary_codes_for_alph();
+}
