@@ -38,9 +38,9 @@ void printValues(Node*node,std::string val){
    printValues(node->left,val+"0");
    printValues(node->right,val+"1");
 }
-int to_encrypt_by_haffman(std::string input)
+int to_encrypt_by_haffman(std::string input,std::string&output)
 {
-    std::string output="";
+    output="";
     for(uint i = 0; i+1<input.size();i+=5){
 
       std::string next_5_bits="";
@@ -83,13 +83,17 @@ int to_encrypt_by_haffman(std::string input)
             key+=input[cur];
         while(key.size()!=5)
             key="0"+key;
-        global::encrypt_data_haf+=global::encryption[key];
+        //global::encrypt_data_haf+=global::encryption[key];
+        output +=global::encryption[key];
     }
-    global::encrypt_data_haf+="\0";
+    //global::encrypt_data_haf+="\0";
+    output+="\0";
     std::cout<<"Generated prefix codes:"<<std::endl;
     printValues(tree[0],"");
-    std::cout<<global::encrypt_data_haf<<std::endl;
-    std::cout<<std::endl<<"Bits of encrypted: "<< global::encrypt_data_haf.size()<<std::endl;
+    //std::cout<<global::encrypt_data_haf<<std::endl;
+    std::cout<<output<<std::endl;
+    //std::cout<<std::endl<<"Bits of encrypted: "<< global::encrypt_data_haf.size()<<std::endl;
+    std::cout<<std::endl<<"Bits of encrypted: "<< output.size()<<std::endl;
     return 0;
 }
 double get_cost_coding(){
@@ -102,9 +106,9 @@ double get_cost_coding(){
     return res;
 }
 
-int to_decode_haffman(std::string &input)
+int to_decode_haffman(std::string &input, std::string&output)
 {
-    global::decode_data_haf="";
+    output="";
     std::string cur_value="";
     std::map<std::string,std::string>reversed_encryption;
     for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
@@ -113,12 +117,12 @@ int to_decode_haffman(std::string &input)
     for(uint cur = 0; cur<input.size();cur++){
        cur_value += input[cur];
        if(reversed_encryption.find(cur_value)!=reversed_encryption.end()){
-           global::decode_data_haf+=reversed_encryption[cur_value];
+           output+=reversed_encryption[cur_value];
            cur_value="";
        }
     }
     std::cout<<std::endl<<"Decode data:"<<std::endl;
-    std::cout<<global::decode_data_haf<<std::endl;
+    std::cout<<output<<std::endl;
     return 0;
 }
 
