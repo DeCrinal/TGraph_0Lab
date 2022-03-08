@@ -15,17 +15,17 @@ public:
 bool cmpNodes(Node *node1,Node* node2){
     return(node1->freq<node2->freq);
 }
-void getEncription(Node*node,std::string val){
+void getEncription(Node*node,std::string val,std::map<std::string,std::string>&haff_encrypt_cnf){
     if(node->left==nullptr || node->right==nullptr){
         if(val==""&&node->left == nullptr)
             val="0";
         std::string temporal = node->val;
         //global::encryption[temporal[0]]=val;
-        global::encryption[temporal]=val;
+        haff_encrypt_cnf[temporal]=val;
         return;
     }
-    getEncription(node->left,val+"0");
-    getEncription(node->right,val+"1");
+    getEncription(node->left,val+"0",haff_encrypt_cnf);
+    getEncription(node->right,val+"1",haff_encrypt_cnf);
 }
 void printValues(Node*node,std::string val){
    if(node->left==nullptr||node->right==nullptr)
@@ -38,7 +38,7 @@ void printValues(Node*node,std::string val){
    printValues(node->left,val+"0");
    printValues(node->right,val+"1");
 }
-int to_encrypt_by_haffman(std::string input,std::string&output)
+int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::string,std::string>&haff_encrypt_cnf)
 {
     output="";
     for(uint i = 0; i+1<input.size();i+=5){
@@ -76,7 +76,7 @@ int to_encrypt_by_haffman(std::string input,std::string&output)
         tree.push_back(newOne);
         sort(tree.begin(),tree.end(),cmpNodes);
     }
-    getEncription(tree[0],"");
+    getEncription(tree[0],"",haff_encrypt_cnf);
     for(unsigned int i = 0; i<input.size();i+=5){
         std::string key = "";
         for(uint cur = i; cur<i+5&&cur+1<input.size();cur++)
@@ -84,7 +84,7 @@ int to_encrypt_by_haffman(std::string input,std::string&output)
         while(key.size()!=5)
             key="0"+key;
         //global::encrypt_data_haf+=global::encryption[key];
-        output +=global::encryption[key];
+        output +=haff_encrypt_cnf[key];
     }
     //global::encrypt_data_haf+="\0";
     output+="\0";

@@ -8,7 +8,8 @@ int main()
     print_non_encrypt();
     std::string encrypt_data;
     std::string decode_data;
-    to_encrypt_by_haffman(global::non_encrypt_data,encrypt_data);
+    std::map<std::string,std::string>haff_encrypt_cnf;
+    to_encrypt_by_haffman(global::non_encrypt_data,encrypt_data,haff_encrypt_cnf);
     //to_encrypt_by_haffman(global::non_encrypt_data);
     std::cout<<"Cost of coding: " << get_cost_coding()<<std::endl;
     to_decode_haffman(encrypt_data, decode_data);

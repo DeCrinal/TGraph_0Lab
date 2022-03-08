@@ -3,9 +3,9 @@
 #include "headers.h"
 class Node;
 bool cmpNodes(Node *node1,Node* node2);
-void getEncription(Node*node,std::string val);
+void getEncription(Node*node,std::string val,std::map<std::string,std::string>&);
 void printValues(Node*node,std::string val);
-int to_encrypt_by_haffman(std::string input, std::string&output);
+int to_encrypt_by_haffman(std::string input, std::string&output,std::map<std::string,std::string>&);
 int to_unencrypt_haffman();
 int to_decode_haffman(std::string&,std::string&);
 double get_cost_coding();
