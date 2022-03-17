@@ -51,7 +51,6 @@ void generate_non_encrypt(){ //bad complexity
             global::non_encrypt_data.push_back(temp[i]);
         }
     }
-    //global::non_encrypt_data.push_back(0);
 }
 
 void set_binary_codes_for_alph()

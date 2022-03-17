@@ -16,11 +16,10 @@ int get_maximum_same_symb_in_order(std::string input_str) //don't use it
             prev_symb = input_str[i];
         }
     }
-    //std::cout<<"**********Debug max:" <<max_in_order<<std::endl;
     return max_in_order; //not more than 30 bits in order (has been tested in 10e9 cases)
 }
 
-//returns result in global::std::string encrypt_data_rle
+
 int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, std::string input,std::string&output,std::vector<int>&rle_encryp_cnf)
 {
    //Заполнение конфигурационного массива для возможности декодирования
@@ -39,8 +38,6 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, std::strin
    for(uint64_t cur=0; cur<input.size();cur+=symbs_am){
        word="";
        bool is_out=false;
-       //std::cout<<"Cycle 1"<<std::endl;
-       //std::cout<<cur<<":"<<input.size()<<std::endl;
        for(uint64_t one_char=cur;one_char<input.size()&&one_char<symbs_am+cur;one_char++){
            word+=input[one_char];
            if(cur+symbs_am>=input.size())
@@ -52,8 +49,6 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, std::strin
            number_of_same_words=1;
            continue;
        }
-       //std::cout<<word<<":"<<word.size()<<std::endl;
-       //std::cout<<"DB, data: "<<std::endl<<global::encrypt_data_rle<<std::endl;
        if(prev_word==word){
            number_of_same_words++;
        }
@@ -73,9 +68,6 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, std::strin
            break;
        }
    }
-   /*while(output.size()%symbs_am!=0){
-       output+="0";
-   }*/
    std::cout<<output<<std::endl;
    std::cout<<"Bits of rle_encrypt:"<<output.size()<<std::endl;
 
@@ -101,7 +93,6 @@ std::string to_binary(uint number,uint bits_int_rle_am)
 
 int to_decode_rle(std::string encrypt_input, std::string&decode_output, std::vector<int>rle_enctypt_cnf)
 {
-    //while(encrypt_input.size()%rle_enctypt_cnf[0]+rle_enctypt_cnf[1]!=0){
     decode_output="";
     uint word_length = rle_enctypt_cnf[0];
     uint bits_am = rle_enctypt_cnf[1];

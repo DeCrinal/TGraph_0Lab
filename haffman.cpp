@@ -12,22 +12,22 @@ public:
         right = nullptr;
     }
 };
-bool cmpNodes(Node *node1,Node* node2){
+bool cmp_nodes(Node *node1,Node* node2){
     return(node1->freq<node2->freq);
 }
-void getEncription(Node*node,std::string val,std::map<std::string,std::string>&haff_encrypt_cnf){
+/*-----------------------------------Функция для получения префиксных кодов по дереву--------------------------------*/
+void get_encryption(Node*node,std::string val,std::map<std::string,std::string>&haff_encrypt_cnf){
     if(node->left==nullptr || node->right==nullptr){
         if(val==""&&node->left == nullptr)
             val="0";
         std::string temporal = node->val;
-        //global::encryption[temporal[0]]=val;
         haff_encrypt_cnf[temporal]=val;
         return;
     }
-    getEncription(node->left,val+"0",haff_encrypt_cnf);
-    getEncription(node->right,val+"1",haff_encrypt_cnf);
+    get_encryption(node->left,val+"0",haff_encrypt_cnf);
+    get_encryption(node->right,val+"1",haff_encrypt_cnf);
 }
-void printValues(Node*node,std::string val){
+void print_values(Node*node,std::string val){
    if(node->left==nullptr||node->right==nullptr)
    {
       if(val==""&&node->left == nullptr)
@@ -35,36 +35,41 @@ void printValues(Node*node,std::string val){
       std::cout<<node->val<<": "<<val<<std::endl;
       return;
    }
-   printValues(node->left,val+"0");
-   printValues(node->right,val+"1");
+   print_values(node->left,val+"0");
+   print_values(node->right,val+"1");
 }
-int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::string,std::string>&haff_encrypt_cnf, int &extra_bits)
+/*-----------------------------------------Функция для кодирования по Хаффману-----------------------------------------*/
+int to_encrypt_by_haffman(std::string input,std::string&output,
+                          std::map<std::string,std::string>&haff_encrypt_cnf, int &extra_bits)
 {
     output="";
+    /*Добавление символов до 5 для возможности кодирования [можно улучшить до n]*/
     while(input.size()%5!=0){
         input+="0";
         extra_bits++;
     }
+
+    /*Составление асс.массива для количества вхождения слов*/
     std::map<std::string,int>arch;
-    //for(uint i = 0; i+1<input.size();i+=5){
     for(uint i = 0; i<input.size();i+=5){
       std::string next_5_bits="";
-      //for(uint cur=i;cur<i+5&&cur+1<input.size();cur++){
       for(uint cur=i;cur<i+5&&cur<input.size();cur++){
           next_5_bits+=input[cur];
       }
-      /*while(next_5_bits.size()!=5)
-          next_5_bits="0"+next_5_bits;*/
       arch[next_5_bits]++;
     }
+
+    /*Построение дерева на массиве по частоте символов*/
     std::vector<Node*>tree;
     for(auto it = arch.begin();it!=arch.end();it++){
         Node *temp=new Node;
         temp->freq=it->second;
         temp->val=it->first;
         tree.push_back(temp);
-        sort(tree.begin(),tree.end(),cmpNodes);
+        sort(tree.begin(),tree.end(),cmp_nodes);
     }
+
+    /*Построение n-1 листьев для дерева по ал. Хаффмана*/
     int n = tree.size();
     for(int i = 0; i+1<n;i++){
         Node *newOne,*temp;
@@ -80,39 +85,37 @@ int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::str
         newOne->val+=temp->val;
         newOne->right=temp;
         tree.push_back(newOne);
-        sort(tree.begin(),tree.end(),cmpNodes);
+        sort(tree.begin(),tree.end(),cmp_nodes);
     }
-    getEncription(tree[0],"",haff_encrypt_cnf);
+    get_encryption(tree[0],"",haff_encrypt_cnf);
+
+    /*Кодирование входных данных по полученным данным*/
     for(unsigned int i = 0; i<input.size();i+=5){
         std::string key = "";
         for(uint cur = i; cur<i+5&&cur<input.size();cur++)
             key+=input[cur];
-        /*while(key.size()!=5)
-            key="0"+key;*/
-        //global::encrypt_data_haf+=global::encryption[key];
         output +=haff_encrypt_cnf[key];
     }
-    //global::encrypt_data_haf+="\0";
     output+="\0";
     std::cout<<"Generated prefix codes:"<<std::endl;
-    printValues(tree[0],"");
-    //std::cout<<global::encrypt_data_haf<<std::endl;
+    print_values(tree[0],"");
+    std::cout<<"Cost of coding: "<<get_cost_coding(arch,haff_encrypt_cnf)<<std::endl;
     std::cout<<output<<std::endl;
-    //std::cout<<std::endl<<"Bits of encrypted: "<< global::encrypt_data_haf.size()<<std::endl;
     std::cout<<std::endl<<"Bits of encrypted: "<< output.size()<<std::endl;
     return 0;
 }
-double get_cost_coding(){
+double get_cost_coding( std::map<std::string,int>arch, std::map<std::string,std::string>&haff_encrypt_cnf){
     double res=0;
-    /*for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
-        if(it==global::encryption.begin())
-            it++; //encryption.begin() = ""
-        res += (it->second.size())*(global::arch[it->first]/static_cast<double>(global::k_10k));
-    }*/
+    for(auto it = haff_encrypt_cnf.begin();it!=haff_encrypt_cnf.end();it++){
+        res += (it->second.size())*(arch[it->first]/static_cast<double>(global::k_10k));
+    }
     return res;
 }
 
-int to_decode_haffman(std::string input, std::string&output,std::map<std::string,std::string>haff_encrypt_cnf,int extra_bits)
+/*--------------------------------------Функция для декодирования к.Хаффманa----------------------------------------*/
+/*Ищет вхождения слов по map, декодирует по ним; удаляет дополнительные биты*/
+int to_decode_haffman(std::string input, std::string&output,
+                      std::map<std::string,std::string>haff_encrypt_cnf,int extra_bits)
 {
     output="";
     std::string cur_value="";
@@ -131,11 +134,13 @@ int to_decode_haffman(std::string input, std::string&output,std::map<std::string
         output.erase(output.end()-1);
         extra_bits--;
     }
+    output+="\0";
     std::cout<<std::endl<<"Decode data:"<<std::endl;
     std::cout<<output<<std::endl;
     return 0;
 }
 
+/*Отечественный аналог bool std::string::operator==(const std::string)*/
 bool is_correct_decode(const std::string str1, const std::string str2)
 {
     for(uint i = 0; i<str1.size()&& i<str2.size();i++)
