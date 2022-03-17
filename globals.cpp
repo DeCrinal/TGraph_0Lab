@@ -1,6 +1,6 @@
 #include"headers.h"
 namespace global {
-    const int k_10k = 5;
+    const int k_10k = 8;
     const int k_dif_symbs_number=25;
     std::string input_data_string;
     std::string decode_data_haf;

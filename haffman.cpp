@@ -38,21 +38,27 @@ void printValues(Node*node,std::string val){
    printValues(node->left,val+"0");
    printValues(node->right,val+"1");
 }
-int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::string,std::string>&haff_encrypt_cnf)
+int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::string,std::string>&haff_encrypt_cnf, int &extra_bits)
 {
     output="";
-    for(uint i = 0; i+1<input.size();i+=5){
-
+    while(input.size()%5!=0){
+        input+="0";
+        extra_bits++;
+    }
+    std::map<std::string,int>arch;
+    //for(uint i = 0; i+1<input.size();i+=5){
+    for(uint i = 0; i<input.size();i+=5){
       std::string next_5_bits="";
-      for(uint cur=i;cur<i+5&&cur+1<input.size();cur++){
+      //for(uint cur=i;cur<i+5&&cur+1<input.size();cur++){
+      for(uint cur=i;cur<i+5&&cur<input.size();cur++){
           next_5_bits+=input[cur];
       }
-      while(next_5_bits.size()!=5)
-          next_5_bits="0"+next_5_bits;
-      global::arch[next_5_bits]++;
+      /*while(next_5_bits.size()!=5)
+          next_5_bits="0"+next_5_bits;*/
+      arch[next_5_bits]++;
     }
     std::vector<Node*>tree;
-    for(auto it = global::arch.begin();it!=global::arch.end();it++){
+    for(auto it = arch.begin();it!=arch.end();it++){
         Node *temp=new Node;
         temp->freq=it->second;
         temp->val=it->first;
@@ -79,10 +85,10 @@ int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::str
     getEncription(tree[0],"",haff_encrypt_cnf);
     for(unsigned int i = 0; i<input.size();i+=5){
         std::string key = "";
-        for(uint cur = i; cur<i+5&&cur+1<input.size();cur++)
+        for(uint cur = i; cur<i+5&&cur<input.size();cur++)
             key+=input[cur];
-        while(key.size()!=5)
-            key="0"+key;
+        /*while(key.size()!=5)
+            key="0"+key;*/
         //global::encrypt_data_haf+=global::encryption[key];
         output +=haff_encrypt_cnf[key];
     }
@@ -98,20 +104,20 @@ int to_encrypt_by_haffman(std::string input,std::string&output,std::map<std::str
 }
 double get_cost_coding(){
     double res=0;
-    for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
+    /*for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
         if(it==global::encryption.begin())
             it++; //encryption.begin() = ""
         res += (it->second.size())*(global::arch[it->first]/static_cast<double>(global::k_10k));
-    }
+    }*/
     return res;
 }
 
-int to_decode_haffman(std::string &input, std::string&output)
+int to_decode_haffman(std::string input, std::string&output,std::map<std::string,std::string>haff_encrypt_cnf,int extra_bits)
 {
     output="";
     std::string cur_value="";
     std::map<std::string,std::string>reversed_encryption;
-    for(auto it = global::encryption.begin();it!=global::encryption.end();it++){
+    for(auto it = haff_encrypt_cnf.begin();it!=haff_encrypt_cnf.end();it++){
         reversed_encryption[it->second]=it->first;
     }
     for(uint cur = 0; cur<input.size();cur++){
@@ -120,6 +126,10 @@ int to_decode_haffman(std::string &input, std::string&output)
            output+=reversed_encryption[cur_value];
            cur_value="";
        }
+    }
+    while(extra_bits!=0){
+        output.erase(output.end()-1);
+        extra_bits--;
     }
     std::cout<<std::endl<<"Decode data:"<<std::endl;
     std::cout<<output<<std::endl;

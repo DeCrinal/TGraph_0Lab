@@ -21,8 +21,17 @@ int get_maximum_same_symb_in_order(std::string input_str) //don't use it
 }
 
 //returns result in global::std::string encrypt_data_rle
-int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, const std::string input,std::string&output)
+int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, std::string input,std::string&output,std::vector<int>&rle_encryp_cnf)
 {
+   //Заполнение конфигурационного массива для возможности декодирования
+   rle_encryp_cnf.push_back(symbs_am);
+   rle_encryp_cnf.push_back(bits_in_rle_am);
+   rle_encryp_cnf.push_back(0);
+   while(input.size()%symbs_am!=0){
+      input+="0";
+      rle_encryp_cnf[2]++;
+   }
+
    uint number_of_same_words=0;
    output="";
    std::string prev_word="";
@@ -34,7 +43,7 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, const std:
        //std::cout<<cur<<":"<<input.size()<<std::endl;
        for(uint64_t one_char=cur;one_char<input.size()&&one_char<symbs_am+cur;one_char++){
            word+=input[one_char];
-           if(input[one_char]=='\0')
+           if(cur+symbs_am>=input.size())
                is_out = true;
        }
        if(cur==0)
@@ -48,7 +57,7 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, const std:
        if(prev_word==word){
            number_of_same_words++;
        }
-       if(prev_word!=word||number_of_same_words==pow(2,bits_in_rle_am)||is_out)
+       if(prev_word!=word||number_of_same_words==pow(2,bits_in_rle_am))
        {
           output+=prev_word;
           if(number_of_same_words<pow(2,bits_in_rle_am))
@@ -58,20 +67,19 @@ int to_encrypt_by_rle(const uint symbs_am, const uint bits_in_rle_am, const std:
           number_of_same_words=1;
           prev_word=word;
        }
-       if(is_out)
+       if(is_out){
+           output+=word;
+           output+=to_binary(number_of_same_words,bits_in_rle_am);
            break;
+       }
    }
+   /*while(output.size()%symbs_am!=0){
+       output+="0";
+   }*/
    std::cout<<output<<std::endl;
    std::cout<<"Bits of rle_encrypt:"<<output.size()<<std::endl;
 
-   //Заполнение конфигурационного массива для возможности декодирования
-   global::rle_cnf.push_back(symbs_am);
-   global::rle_cnf.push_back(bits_in_rle_am);
-   global::rle_cnf.push_back(0);
-   while(output.size()%symbs_am!=0){
-      output.push_back(0);
-      global::rle_cnf[2]++;
-   }
+
    return 0;
 }
 
@@ -91,21 +99,22 @@ std::string to_binary(uint number,uint bits_int_rle_am)
     return res;
 }
 
-int to_decode_rle(const std::string encrypt_input, std::string&decode_output)
+int to_decode_rle(std::string encrypt_input, std::string&decode_output, std::vector<int>rle_enctypt_cnf)
 {
+    //while(encrypt_input.size()%rle_enctypt_cnf[0]+rle_enctypt_cnf[1]!=0){
     decode_output="";
-    uint word_length = global::rle_cnf[0];
-    uint bits_am = global::rle_cnf[1];
-    uint extra_bits = global::rle_cnf[2];
+    uint word_length = rle_enctypt_cnf[0];
+    uint bits_am = rle_enctypt_cnf[1];
+    uint extra_bits = rle_enctypt_cnf[2];
     for(uint cur = 0; cur+extra_bits<encrypt_input.size();cur+=word_length+bits_am){
         std::string word="";
         std::string word_am_bits="";
         uint word_am_number;
-        for(uint cur_word=cur;cur_word+extra_bits<word_length+cur
+        for(uint cur_word=cur;cur_word<word_length+cur
             &&cur_word<encrypt_input.size();cur_word++){
             word+=encrypt_input[cur_word];
         }
-        for(uint cur_am=cur+word_length;cur_am+extra_bits<cur+word_length+bits_am
+        for(uint cur_am=cur+word_length;cur_am<cur+word_length+bits_am
             &&cur_am<encrypt_input.size();cur_am++){
             word_am_bits+=encrypt_input[cur_am];
         }
@@ -114,6 +123,9 @@ int to_decode_rle(const std::string encrypt_input, std::string&decode_output)
         {
             decode_output+=word;
         }
+    }
+    for(uint i = 0; i<extra_bits;i++){
+        decode_output.erase(decode_output.end()-1);
     }
     std::cout<<std::endl<<"Decode RLE:"<<std::endl;
     std::cout<<decode_output<<std::endl;
@@ -124,7 +136,8 @@ int to_decode_rle(const std::string encrypt_input, std::string&decode_output)
 uint bits_str_to_num(const std::string bits_str)
 {
     uint res = 0;
-    for(uint i = 0; i<bits_str.size();i++){
+    for(uint i = 0; i<bits_str.size();i++)
+    {
         res*=2;
         res+=bits_str[i]-'0';
     }

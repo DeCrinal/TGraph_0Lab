@@ -4,7 +4,7 @@ void generate_10k_symbs(){
     for(int i = 0; i<global::k_10k;i++){
        global::input_data_string+= global::alphabet[rand()%global::k_dif_symbs_number];
     }
-    global::input_data_string += '\0';
+    //global::input_data_string += '\0';
     set_binary_codes_for_alph();
 }
 void print_10k_symbs(){
@@ -41,7 +41,7 @@ void print_non_encrypt(){
     std::cout<<"Non encrypt binary code:"<<std::endl;
     for(uint i = 0; i<global::non_encrypt_data.size();i++)
         std::cout<<global::non_encrypt_data[i];
-    std::cout<<std::endl<<"Bits of non_encrypt: "<<global::non_encrypt_data.size()-1<<std::endl;;
+    std::cout<<std::endl<<"Bits of non_encrypt: "<<global::non_encrypt_data.size()<<std::endl;;
     return;
 }
 void generate_non_encrypt(){ //bad complexity
@@ -51,7 +51,7 @@ void generate_non_encrypt(){ //bad complexity
             global::non_encrypt_data.push_back(temp[i]);
         }
     }
-    global::non_encrypt_data.push_back(0);
+    //global::non_encrypt_data.push_back(0);
 }
 
 void set_binary_codes_for_alph()
@@ -67,6 +67,6 @@ void generate_same_10k_symbs()
    for(int i = 0; i<global::k_10k;i++){
        global::input_data_string+=global::alphabet[rand()%1];
    }
-   global::input_data_string+='\0';
+   //global::input_data_string+='\0';
    set_binary_codes_for_alph();
 }

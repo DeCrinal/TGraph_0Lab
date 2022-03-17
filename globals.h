@@ -33,7 +33,7 @@ namespace global {
     extern std::map<char, int> arch; //количество каждого символа
 #else
     extern std::map<std::string,std::string>encryption; //представление 5-ти битов в кодировке
-    extern std::map<std::string, int> arch; //количество каждых 5-ти символов
+    //extern std::map<std::string, int> arch; //количество каждых 5-ти символов
 #endif
 }
 #endif // GLOBALS_H
