@@ -50,8 +50,8 @@ int main()
     std::cout<<"4 encr:"<<std::endl;
     to_encrypt_by_rle(5,2,encrypt_data,encrypt_data,rle_encrypt_cnf_2);
 
-    /*std::cout <<"Compression ratio: " <<static_cast<double>(global::non_encrypt_data.size())/
-                encrypt_data.size()<<std::endl;*/
+    std::cout <<"Compression ratio: " <<static_cast<double>(global::non_encrypt_data.size())/
+                encrypt_data.size()<<std::endl;
 
     std::cout<<"1 dec:";
     to_decode_rle(encrypt_data,decode_data,rle_encrypt_cnf_2);
